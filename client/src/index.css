@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@theme {
+  /* Identidad visual JTool Enterprise */
+  --color-noche: #0E2A47;
+  --color-esmeralda: #00C896;
+  --color-grafito: #2C2C2A;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
