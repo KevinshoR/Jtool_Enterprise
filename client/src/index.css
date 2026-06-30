@@ -2,11 +2,17 @@
 
 @theme {
   /* Identidad visual JTool Enterprise */
-  --color-noche: #0E2A47;
-  --color-esmeralda: #00C896;
-  --color-grafito: #2C2C2A;
+  --color-noche: #0E2A47;       /* Azul Noche (primario) */
+  --color-esmeralda: #00C896;   /* Verde Esmeralda (acento) */
+  --color-profundo: #1A3F5C;    /* Azul Profundo */
+  --color-grafito: #2C2C2A;     /* Grafito */
+  --color-neblina: #F5F7FA;     /* Blanco Neblina (fondo) */
+  --color-verdesuave: #E8FBF6;  /* Verde suave (fondos de sección) */
+  --color-naranja: #FF6B35;     /* Naranja (CTA secundario) */
 
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  /* Inter para títulos, DM Sans para cuerpo */
+  --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
 }
 
 html {
