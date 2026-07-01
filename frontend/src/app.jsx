@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -7,20 +7,43 @@ import Productos from './pages/Productos/Productos'
 import Precios from './pages/Precios/Precios'
 import Contacto from './pages/Contacto/Contacto'
 import Login from './pages/Login/Login'
+import AdminRoute from './components/AdminRoute'
+import AdminLayout from './components/Admin/AdminLayout'
+import Dashboard from './pages/Admin/Dashboard/Dashboard'
+import Usuarios from './pages/Admin/Usuarios/Usuarios'
+import Clientes from './pages/Admin/Clientes/Clientes'
+
+function PublicChrome({ children }) {
+  const { pathname } = useLocation()
+  const isAdmin = pathname.startsWith('/admin')
+  return (
+    <>
+      {!isAdmin && <Navbar />}
+      {children}
+      {!isAdmin && <Footer />}
+    </>
+  )
+}
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/productos" element={<Productos />} />
-          <Route path="/precios" element={<Precios />} />
-          <Route path="/contacto" element={<Contacto />} />
-          <Route path="/login" element={<Login />} />
-        </Routes>
-        <Footer />
+        <PublicChrome>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/productos" element={<Productos />} />
+            <Route path="/precios" element={<Precios />} />
+            <Route path="/contacto" element={<Contacto />} />
+            <Route path="/login" element={<Login />} />
+
+            <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
+              <Route index element={<Dashboard />} />
+              <Route path="usuarios" element={<Usuarios />} />
+              <Route path="clientes" element={<Clientes />} />
+            </Route>
+          </Routes>
+        </PublicChrome>
       </BrowserRouter>
     </AuthProvider>
   )

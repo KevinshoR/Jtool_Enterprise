@@ -2,6 +2,19 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const pool = require('../db/db')
 
+function isPasswordValid(password) {
+  const minLength = password.length >= 8
+  const hasUpper = /[A-Z]/.test(password)
+  const hasLower = /[a-z]/.test(password)
+  const hasNumber = /[0-9]/.test(password)
+  const hasSpecial = /[^A-Za-z0-9]/.test(password)
+  return minLength && hasUpper && hasLower && hasNumber && hasSpecial
+}
+
+function isEmailValid(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+}
+
 async function login(req, res) {
   const { email, password } = req.body
   if (!email || !password) {
@@ -34,9 +47,26 @@ async function login(req, res) {
 
 async function register(req, res) {
   const { name, email, password } = req.body
+
   if (!name || !email || !password) {
     return res.status(400).json({ message: 'Todos los campos son requeridos' })
   }
+
+  if (name.trim().length < 2) {
+    return res.status(400).json({ message: 'El nombre debe tener al menos 2 caracteres' })
+  }
+
+  if (!isEmailValid(email)) {
+    return res.status(400).json({ message: 'El correo electrónico no es válido' })
+  }
+
+  if (!isPasswordValid(password)) {
+    return res.status(400).json({
+      message:
+        'La contraseña debe tener mínimo 8 caracteres, incluyendo mayúscula, minúscula, número y carácter especial',
+    })
+  }
+
   try {
     const existing = await pool.query('SELECT id FROM users WHERE email = $1', [email])
     if (existing.rows.length > 0) {

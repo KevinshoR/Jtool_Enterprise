@@ -1,5 +1,7 @@
 const express = require('express')
+const plansRoutes = require('./src/routes/plans.routes')   // ← nuevo
 const cors = require('cors')
+const adminRoutes = require('./src/routes/admin.routes') 
 require('dotenv').config()
 const pool = require('./src/db/db')
 const authRoutes = require('./src/routes/auth.routes')   // ← nuevo
@@ -11,6 +13,8 @@ app.use(cors())
 app.use(express.json())
 
 app.use('/api/auth', authRoutes)   // ← nuevo
+app.use('/api/admin', adminRoutes) 
+app.use('/api/plans', plansRoutes)
 
 app.get('/', async (req, res) => {
   try {
