@@ -2,12 +2,6 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import api from '../../services/api'
 
-const accentStyles = {
-  esmeralda: { bg: 'bg-esmeralda', text: 'text-esmeralda', soft: 'bg-esmeralda/10' },
-  profundo: { bg: 'bg-profundo', text: 'text-profundo', soft: 'bg-profundo/10' },
-  naranja: { bg: 'bg-naranja', text: 'text-naranja', soft: 'bg-naranja/10' },
-}
-
 // Programas que ya tienen demo interactivo conectado
 const demosDisponibles = ['barberpro']
 
@@ -45,7 +39,6 @@ function ProductoDetalle() {
     )
   }
 
-  const styles = accentStyles[producto.accent] || accentStyles.esmeralda
   const tieneDemo = demosDisponibles.includes(producto.code)
 
   return (
@@ -57,7 +50,7 @@ function ProductoDetalle() {
             ← Todos los programas
           </Link>
 
-          <div className={`mt-6 h-14 w-14 rounded-2xl ${styles.bg} flex items-center justify-center font-black text-noche text-xl`}>
+          <div className="mt-6 h-14 w-14 rounded-2xl bg-esmeralda flex items-center justify-center font-black text-noche text-xl">
             {producto.name.charAt(0)}
           </div>
 
@@ -75,7 +68,7 @@ function ProductoDetalle() {
             )}
             <Link
               to="/precios"
-              className={`rounded-xl ${styles.bg} px-6 py-3 text-sm font-bold text-noche hover:scale-105 transition-transform`}
+              className="rounded-xl bg-esmeralda px-6 py-3 text-sm font-bold text-noche hover:scale-105 transition-transform"
             >
               Ver planes disponibles
             </Link>
@@ -91,8 +84,8 @@ function ProductoDetalle() {
 
       {/* Para quién es */}
       <section className="mx-auto max-w-4xl px-6 py-14">
-        <div className={`rounded-2xl ${styles.soft} p-8`}>
-          <p className={`text-xs font-bold uppercase tracking-widest ${styles.text}`}>Para quién es</p>
+        <div className="rounded-2xl bg-esmeralda/10 p-8">
+          <p className="text-xs font-bold uppercase tracking-widest text-esmeralda">Para quién es</p>
           <p className="mt-2 text-lg text-noche font-medium">{producto.target_audience}</p>
         </div>
       </section>
@@ -103,7 +96,7 @@ function ProductoDetalle() {
         <div className="grid gap-4 sm:grid-cols-2">
           {(producto.features || []).map((f) => (
             <div key={f} className="flex items-start gap-3 rounded-xl bg-white border border-black/5 p-5 shadow-sm">
-              <span className={`mt-0.5 ${styles.text} font-bold`}>✓</span>
+              <span className="mt-0.5 text-esmeralda font-bold">✓</span>
               <span className="text-grafito/80">{f}</span>
             </div>
           ))}

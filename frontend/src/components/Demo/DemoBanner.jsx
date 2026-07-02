@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 
 function DemoBanner({ productName }) {
   return (
-    <div className="sticky top-0 z-50 bg-naranja text-noche px-6 py-3 flex flex-wrap items-center justify-between gap-3 text-sm">
+    <div className="sticky top-0 z-50 bg-esmeralda text-noche px-6 py-3 flex flex-wrap items-center justify-between gap-3 text-sm">
       <span>
         🧪 Estás probando <strong>{productName}</strong> en modo demo — nada de lo que hagas aquí se guarda.
       </span>
