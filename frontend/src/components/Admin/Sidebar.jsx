@@ -1,5 +1,6 @@
-import { NavLink } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { NavLink, Link } from 'react-router-dom'
+import { ArrowLeft } from 'lucide-react'
 
 const links = [
   { to: '/admin', label: 'Dashboard', end: true },
@@ -17,6 +18,16 @@ function Sidebar() {
           JTool <span className="text-esmeralda">Admin</span>
         </span>
       </div>
+
+      <div className="px-4 pt-4">
+  <Link
+    to="/"
+    className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-white/50 hover:text-white hover:bg-white/5 transition-colors w-fit"
+  >
+    <ArrowLeft size={16} />
+    Volver al sitio
+  </Link>
+</div>
 
       <nav className="flex-1 px-4 py-6 flex flex-col gap-1">
         {links.map((link) => (

@@ -2,7 +2,9 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
+import DemoRouter from './pages/Demo/DemoRouter'
 import Home from './pages/Home/Home'
+import ProductoDetalle from './pages/Productos/ProductoDetalle'
 import Productos from './pages/Productos/Productos'
 import Precios from './pages/Precios/Precios'
 import Contacto from './pages/Contacto/Contacto'
@@ -15,12 +17,12 @@ import Clientes from './pages/Admin/Clientes/Clientes'
 
 function PublicChrome({ children }) {
   const { pathname } = useLocation()
-  const isAdmin = pathname.startsWith('/admin')
+  const hideChrome = pathname.startsWith('/admin') || pathname.startsWith('/demo')
   return (
     <>
-      {!isAdmin && <Navbar />}
+      {!hideChrome && <Navbar />}
       {children}
-      {!isAdmin && <Footer />}
+      {!hideChrome && <Footer />}
     </>
   )
 }
@@ -33,6 +35,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/productos" element={<Productos />} />
+            <Route path="/productos/:code" element={<ProductoDetalle />} />
+            <Route path="/demo/:code" element={<DemoRouter />} />
             <Route path="/precios" element={<Precios />} />
             <Route path="/contacto" element={<Contacto />} />
             <Route path="/login" element={<Login />} />
