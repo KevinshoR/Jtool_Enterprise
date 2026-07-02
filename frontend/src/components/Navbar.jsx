@@ -1,6 +1,11 @@
 import { useState, useEffect } from 'react'
-import { Link, NavLink } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { Link, NavLink, useLocation } from 'react-router-dom'
+
+const { pathname } = useLocation()
+  // Páginas sin hero oscuro arriba: el navbar debe ir sólido siempre
+  const paginaClara = pathname.startsWith('/dashboard')
+  const solido = scrolled || paginaClara
 
 const links = [
   { to: '/productos', label: 'Productos' },
@@ -29,7 +34,7 @@ function Navbar() {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled
+        solido
           ? 'bg-noche/95 backdrop-blur-md shadow-lg shadow-black/20 border-b border-white/10'
           : 'bg-transparent'
       }`}
