@@ -9,6 +9,7 @@ const {
   createCompany,
   getProducts,
   assignProduct,
+  manageSubscription,
 } = require('../controllers/admin.controller')
 
 router.use(verifyToken, isAdmin)
@@ -19,5 +20,6 @@ router.get('/companies', getCompanies)
 router.post('/companies', createCompany)
 router.get('/products', getProducts)
 router.post('/companies/:id/products', assignProduct)
+router.patch('/companies/:id/subscription', manageSubscription)
 
 module.exports = router

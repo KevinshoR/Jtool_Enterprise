@@ -4,6 +4,7 @@ const cors = require('cors')
 const chatRoutes = require('./src/routes/chat.routes')
 const adminRoutes = require('./src/routes/admin.routes') 
 require('dotenv').config()
+const subscriptionsRoutes = require('./src/routes/subscriptions.routes')
 const productsRoutes = require('./src/routes/products.routes')
 const pool = require('./src/db/db')
 const authRoutes = require('./src/routes/auth.routes')   // ← nuevo
@@ -13,7 +14,7 @@ const PORT = process.env.PORT || 3000
 
 app.use(cors())
 app.use(express.json())
-
+app.use('/api', subscriptionsRoutes)
 app.use('/api/auth', authRoutes)   // ← nuevo
 app.use('/api/admin', adminRoutes) 
 app.use('/api/plans', plansRoutes)

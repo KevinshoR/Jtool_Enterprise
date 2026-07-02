@@ -10,6 +10,7 @@ import Precios from './pages/Precios/Precios'
 import Contacto from './pages/Contacto/Contacto'
 import Login from './pages/Login/Login'
 import Registro from './pages/Registro/Registro'
+import Empezar from './pages/Onboarding/Empezar'
 import ChatWidget from './components/Chat/ChatWidget'
 import NotFound from './pages/NotFound/NotFound'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -48,6 +49,7 @@ function App() {
             <Route path="/precios" element={<Precios />} />
             <Route path="/contacto" element={<Contacto />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/empezar" element={<ProtectedRoute><Empezar /></ProtectedRoute>} />
             <Route path="/registro" element={<Registro />} />
             <Route path="/recuperar" element={<RecuperarPassword />} />
             <Route
