@@ -28,20 +28,10 @@ function PublicChrome({ children }) {
       {!hideChrome && <Navbar />}
       {children}
       {!hideChrome && <Footer />}
-    </>
-  )
-  function PublicChrome({ children }) {
-  const { pathname } = useLocation()
-  const hideChrome = pathname.startsWith('/admin') || pathname.startsWith('/demo')
-  return (
-    <>
-      {!hideChrome && <Navbar />}
-      {children}
-      {!hideChrome && <Footer />}
       {!hideChrome && <ChatWidget />}
     </>
   )
-}
+  
 }
 
 function App() {
