@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import Navbar from './components/Navbar'
+import Configuracion from './pages/Configuracion/Configuracion'
 import Footer from './components/Footer'
 import DemoRouter from './pages/Demo/DemoRouter'
 import Home from './pages/Home/Home'
@@ -58,11 +59,17 @@ function App() {
                 <ProtectedRoute>
                   <ClientDashboard />
                 </ProtectedRoute>
+
               }
             />
+            <Route path="/configuracion" 
+            element={<ProtectedRoute>
+              <Configuracion />
+              </ProtectedRoute>} />
 
             <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
               <Route index element={<Dashboard />} />
+
               <Route path="usuarios" element={<Usuarios />} />
               <Route path="clientes" element={<Clientes />} />
             </Route>

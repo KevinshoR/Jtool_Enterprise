@@ -1,11 +1,7 @@
 import { useState, useEffect } from 'react'
-import { useAuth } from '../context/AuthContext'
 import { Link, NavLink, useLocation } from 'react-router-dom'
-
-const { pathname } = useLocation()
-  // Páginas sin hero oscuro arriba: el navbar debe ir sólido siempre
-  const paginaClara = pathname.startsWith('/dashboard')
-  const solido = scrolled || paginaClara
+import { Settings, LogOut, LayoutDashboard } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
 
 const links = [
   { to: '/productos', label: 'Productos' },
@@ -17,6 +13,11 @@ function Navbar() {
   const [open, setOpen] = useState(false)
   const { isAuthenticated, logout, user } = useAuth()
   const [scrolled, setScrolled] = useState(false)
+  const { pathname } = useLocation()
+
+  // Páginas sin hero oscuro arriba: el navbar debe ir sólido siempre
+  const paginaClara = pathname.startsWith('/dashboard') || pathname.startsWith('/configuracion')
+  const solido = scrolled || paginaClara
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -30,6 +31,11 @@ function Navbar() {
         ? 'text-esmeralda after:w-full'
         : 'text-white/70 hover:text-white after:w-0 hover:after:w-full'
     }`
+
+  function cerrarSesion() {
+    setOpen(false)
+    logout()
+  }
 
   return (
     <header
@@ -66,25 +72,43 @@ function Navbar() {
           ))}
         </ul>
 
-        {/* CTA escritorio */}
+        {/* Zona derecha escritorio */}
         {isAuthenticated ? (
-  <button
-    onClick={logout}
-    className="hidden md:inline-flex items-center gap-2 rounded-xl bg-white/10 px-5 py-2.5 text-sm font-bold text-white transition-all duration-300 hover:bg-white/20"
-  >
-    Cerrar sesión ({user.name})
-  </button>
-) : (
-  <Link
-    to="/login"
-    className="hidden md:inline-flex items-center gap-2 rounded-xl bg-esmeralda px-5 py-2.5 text-sm font-bold text-noche transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-esmeralda/30"
-  >
-    Iniciar sesión
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7" />
-    </svg>
-  </Link>
-)}
+          <div className="hidden items-center gap-2 md:flex">
+            <Link
+              to={user.role === 'admin' ? '/admin' : '/dashboard'}
+              title="Mi panel"
+              className="inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2.5 text-sm font-bold text-white transition-all duration-300 hover:bg-white/20"
+            >
+              <LayoutDashboard size={15} />
+              Mi panel
+            </Link>
+            <Link
+              to="/configuracion"
+              title="Configuración"
+              className="inline-flex items-center justify-center rounded-xl bg-white/10 p-2.5 text-white transition-all duration-300 hover:bg-white/20 hover:rotate-45"
+            >
+              <Settings size={17} />
+            </Link>
+            <button
+              onClick={cerrarSesion}
+              title={`Cerrar sesión (${user.name})`}
+              className="inline-flex items-center justify-center rounded-xl bg-white/10 p-2.5 text-white/70 transition-all duration-300 hover:bg-red-500/20 hover:text-red-300"
+            >
+              <LogOut size={17} />
+            </button>
+          </div>
+        ) : (
+          <Link
+            to="/login"
+            className="hidden md:inline-flex items-center gap-2 rounded-xl bg-esmeralda px-5 py-2.5 text-sm font-bold text-noche transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-esmeralda/30"
+          >
+            Iniciar sesión
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </Link>
+        )}
 
         {/* Botón móvil */}
         <button
@@ -106,7 +130,7 @@ function Navbar() {
       {/* Menú móvil */}
       <div
         className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-          open ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+          open ? 'max-h-[480px] opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
         <div className="border-t border-white/10 bg-noche/98 backdrop-blur-md px-6 py-6">
@@ -126,18 +150,53 @@ function Navbar() {
                 </NavLink>
               </li>
             ))}
-            <li className="pt-2 border-t border-white/10">
-              <Link
-                to="/contacto"
-                onClick={() => setOpen(false)}
-                className="inline-flex items-center gap-2 rounded-xl bg-esmeralda px-5 py-3 text-sm font-bold text-noche"
-              >
-                Empezar gratis
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </Link>
-            </li>
+
+            {isAuthenticated ? (
+              <>
+                <li className="pt-2 border-t border-white/10">
+                  <Link
+                    to={user.role === 'admin' ? '/admin' : '/dashboard'}
+                    onClick={() => setOpen(false)}
+                    className="flex items-center gap-3 text-base font-medium text-white/70 hover:text-white transition-colors"
+                  >
+                    <LayoutDashboard size={17} />
+                    Mi panel
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/configuracion"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center gap-3 text-base font-medium text-white/70 hover:text-white transition-colors"
+                  >
+                    <Settings size={17} />
+                    Configuración
+                  </Link>
+                </li>
+                <li>
+                  <button
+                    onClick={cerrarSesion}
+                    className="flex items-center gap-3 text-base font-medium text-red-300/80 hover:text-red-300 transition-colors"
+                  >
+                    <LogOut size={17} />
+                    Cerrar sesión ({user.name})
+                  </button>
+                </li>
+              </>
+            ) : (
+              <li className="pt-2 border-t border-white/10">
+                <Link
+                  to="/registro"
+                  onClick={() => setOpen(false)}
+                  className="inline-flex items-center gap-2 rounded-xl bg-esmeralda px-5 py-3 text-sm font-bold text-noche"
+                >
+                  Empezar gratis
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              </li>
+            )}
           </ul>
         </div>
       </div>
