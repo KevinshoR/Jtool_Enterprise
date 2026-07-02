@@ -10,6 +10,7 @@ import Precios from './pages/Precios/Precios'
 import Contacto from './pages/Contacto/Contacto'
 import Login from './pages/Login/Login'
 import Registro from './pages/Registro/Registro'
+import ChatWidget from './components/Chat/ChatWidget'
 import NotFound from './pages/NotFound/NotFound'
 import ProtectedRoute from './components/ProtectedRoute'
 import ClientDashboard from './pages/Dashboard/Dashboard'
@@ -29,6 +30,18 @@ function PublicChrome({ children }) {
       {!hideChrome && <Footer />}
     </>
   )
+  function PublicChrome({ children }) {
+  const { pathname } = useLocation()
+  const hideChrome = pathname.startsWith('/admin') || pathname.startsWith('/demo')
+  return (
+    <>
+      {!hideChrome && <Navbar />}
+      {children}
+      {!hideChrome && <Footer />}
+      {!hideChrome && <ChatWidget />}
+    </>
+  )
+}
 }
 
 function App() {

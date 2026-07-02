@@ -1,6 +1,7 @@
 const express = require('express')
 const plansRoutes = require('./src/routes/plans.routes')   // ← nuevo
 const cors = require('cors')
+const chatRoutes = require('./src/routes/chat.routes')
 const adminRoutes = require('./src/routes/admin.routes') 
 require('dotenv').config()
 const productsRoutes = require('./src/routes/products.routes')
@@ -17,6 +18,7 @@ app.use('/api/auth', authRoutes)   // ← nuevo
 app.use('/api/admin', adminRoutes) 
 app.use('/api/plans', plansRoutes)
 app.use('/api/products', productsRoutes) 
+app.use('/api/chat', chatRoutes)
 
 app.get('/', async (req, res) => {
   try {
