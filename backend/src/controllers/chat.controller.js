@@ -123,7 +123,11 @@ async function chat(req, res) {
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: buildSystemPrompt(data) }] },
           contents,
-          generationConfig: { maxOutputTokens: 300, temperature: 0.6 },
+          generationConfig: {
+            maxOutputTokens: 600,
+            temperature: 0.6,
+            thinkingConfig: { thinkingBudget: 0 },
+          },
         }),
       }
     )

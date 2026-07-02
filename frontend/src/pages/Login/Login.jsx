@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import GoogleButton from '../../components/GoogleButton'
 import { useNavigate, Link } from 'react-router-dom'
 import { Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
@@ -96,7 +97,7 @@ function Login() {
             {loading ? 'Ingresando...' : 'Ingresar'}
           </button>
         </form>
-
+        <GoogleButton />
         <p className="text-white/40 text-xs mt-6 text-center">
           ¿No tienes cuenta? <Link to="/registro" className="text-esmeralda hover:underline">Regístrate</Link>
         </p>

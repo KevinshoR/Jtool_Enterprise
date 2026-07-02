@@ -14,11 +14,23 @@ export function AuthProvider({ children }) {
     setLoading(false)
   }, [])
 
-  async function login(email, password) {
-    const { data } = await api.post('/auth/login', { email, password })
+  function guardarSesion(data) {
     localStorage.setItem('jtool_token', data.token)
     localStorage.setItem('jtool_user', JSON.stringify(data.user))
     setUser(data.user)
+  }
+
+  async function login(email, password) {
+    const { data } = await api.post('/auth/login', { email, password })
+    guardarSesion(data)
+    return data
+  }
+
+  /* Login/registro con Google: recibe el credential que entrega
+     Google Identity Services y lo valida contra nuestro backend */
+  async function loginWithGoogle(credential) {
+    const { data } = await api.post('/auth/google', { credential })
+    guardarSesion(data)
     return data
   }
 
@@ -29,7 +41,9 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading, isAuthenticated: !!user }}>
+    <AuthContext.Provider
+      value={{ user, login, loginWithGoogle, logout, loading, isAuthenticated: !!user }}
+    >
       {children}
     </AuthContext.Provider>
   )

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { Eye, EyeOff, Check, X } from 'lucide-react'
 import api from '../../services/api'
+import GoogleButton from '../../components/GoogleButton'
 
 const rules = [
   { label: 'Mínimo 8 caracteres', test: (p) => p.length >= 8 },
@@ -128,6 +129,7 @@ function Registro() {
             {loading ? 'Creando cuenta...' : 'Crear cuenta'}
           </button>
         </form>
+        <GoogleButton />
 
         <p className="text-white/40 text-xs mt-6 text-center">
           ¿Ya tienes cuenta? <Link to="/login" className="text-esmeralda hover:underline">Inicia sesión</Link>

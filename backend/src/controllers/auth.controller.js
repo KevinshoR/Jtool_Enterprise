@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs')
+const crypto = require('crypto')
 const jwt = require('jsonwebtoken')
 const pool = require('../db/db')
 
@@ -15,6 +16,14 @@ function isEmailValid(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 
+function issueToken(user) {
+  return jwt.sign(
+    { id: user.id, email: user.email, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_EXPIRES_IN || '1d' }
+  )
+}
+
 async function login(req, res) {
   const { email, password } = req.body
   if (!email || !password) {
@@ -28,11 +37,7 @@ async function login(req, res) {
     const passwordMatch = await bcrypt.compare(password, user.password)
     if (!passwordMatch) return res.status(401).json({ message: 'Credenciales inválidas' })
 
-    const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '1d' }
-    )
+    const token = issueToken(user)
 
     res.json({
       message: 'Login exitoso',
@@ -84,8 +89,72 @@ async function register(req, res) {
   }
 }
 
+/*
+ * Login / registro con Google.
+ * El frontend envía el `credential` (ID token) que entrega Google Identity
+ * Services. Aquí lo verificamos CONTRA GOOGLE (firma + audiencia) y, si el
+ * correo no existe, creamos la cuenta automáticamente.
+ */
+async function googleLogin(req, res) {
+  const { credential } = req.body
+  if (!credential) {
+    return res.status(400).json({ message: 'Falta el credential de Google' })
+  }
+  if (!process.env.GOOGLE_CLIENT_ID) {
+    return res.status(500).json({ message: 'Google Sign-In no está configurado en el servidor' })
+  }
+
+  try {
+    // Verificación del token con Google
+    const response = await fetch(
+      `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(credential)}`
+    )
+    if (!response.ok) {
+      return res.status(401).json({ message: 'Token de Google inválido' })
+    }
+    const payload = await response.json()
+
+    // El token debe ser PARA nuestra app y el correo debe estar verificado
+    if (payload.aud !== process.env.GOOGLE_CLIENT_ID) {
+      return res.status(401).json({ message: 'Token de Google inválido' })
+    }
+    if (payload.email_verified !== 'true' && payload.email_verified !== true) {
+      return res.status(401).json({ message: 'El correo de Google no está verificado' })
+    }
+
+    const email = payload.email
+    const name = payload.name || email.split('@')[0]
+
+    // Buscar o crear el usuario
+    let result = await pool.query('SELECT * FROM users WHERE email = $1', [email])
+    let user = result.rows[0]
+
+    if (!user) {
+      // Contraseña aleatoria imposible de adivinar: la cuenta solo entra por Google
+      // (o por "olvidé mi contraseña" cuando exista esa función)
+      const randomPassword = await bcrypt.hash(crypto.randomBytes(32).toString('hex'), 10)
+      const created = await pool.query(
+        'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id, name, email, role',
+        [name, email, randomPassword]
+      )
+      user = created.rows[0]
+    }
+
+    const token = issueToken(user)
+
+    res.json({
+      message: 'Login con Google exitoso',
+      token,
+      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+    })
+  } catch (error) {
+    console.error('Google login error:', error)
+    res.status(500).json({ message: 'Error en el servidor' })
+  }
+}
+
 async function me(req, res) {
   res.json({ user: req.user })
 }
 
-module.exports = { login, register, me }
+module.exports = { login, register, googleLogin, me }
