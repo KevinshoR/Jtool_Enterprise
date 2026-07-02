@@ -83,7 +83,7 @@ function Login() {
             </div>
             <div className="mt-2 text-right">
               {/* TODO: conectar flujo real de recuperación de contraseña */}
-              <Link to="/recuperar" className="text-xs text-grafito/50 hover:text-esmeralda transition-colors">
+              <Link to="/recuperar" className="text-xs text-white/40 hover:text-esmeralda transition-colors">
   ¿Olvidaste tu contraseña?
 </Link>
             </div>

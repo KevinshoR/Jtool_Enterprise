@@ -189,7 +189,9 @@ async function forgotPassword(req, res) {
   try {
     const result = await pool.query('SELECT id FROM users WHERE email = $1', [email])
     if (result.rows.length === 0) {
-      return res.json(genericResponse)
+      return res.status(404).json({
+        message: 'Este correo no está registrado en JTool Enterprise. Verifica que esté bien escrito o crea una cuenta.',
+      })
     }
 
     // Código de 6 dígitos criptográficamente aleatorio
