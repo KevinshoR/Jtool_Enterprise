@@ -9,6 +9,10 @@ import Productos from './pages/Productos/Productos'
 import Precios from './pages/Precios/Precios'
 import Contacto from './pages/Contacto/Contacto'
 import Login from './pages/Login/Login'
+import Registro from './pages/Registro/Registro'
+import NotFound from './pages/NotFound/NotFound'
+import ProtectedRoute from './components/ProtectedRoute'
+import ClientDashboard from './pages/Dashboard/Dashboard'
 import AdminRoute from './components/AdminRoute'
 import AdminLayout from './components/Admin/AdminLayout'
 import Dashboard from './pages/Admin/Dashboard/Dashboard'
@@ -40,12 +44,23 @@ function App() {
             <Route path="/precios" element={<Precios />} />
             <Route path="/contacto" element={<Contacto />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/registro" element={<Registro />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <ClientDashboard />
+                </ProtectedRoute>
+              }
+            />
 
             <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
               <Route index element={<Dashboard />} />
               <Route path="usuarios" element={<Usuarios />} />
               <Route path="clientes" element={<Clientes />} />
             </Route>
+
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </PublicChrome>
       </BrowserRouter>

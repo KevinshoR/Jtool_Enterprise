@@ -18,7 +18,7 @@ function Login() {
   setLoading(true)
   try {
     const data = await login(email, password)
-    navigate(data.user.role === 'admin' ? '/admin' : '/')
+    navigate(data.user.role === 'admin' ? '/admin' : '/dashboard')
   } catch (err) {
     setError(err.response?.data?.message || 'Error al iniciar sesión')
   } finally {
@@ -27,9 +27,19 @@ function Login() {
 }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-noche px-6">
+    <div className="min-h-screen flex items-center justify-center bg-noche px-6 py-24">
       <div className="w-full max-w-md bg-white/5 border border-white/10 rounded-2xl p-8 backdrop-blur-md">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="h-10 w-10 rounded-xl bg-esmeralda flex items-center justify-center font-black text-noche text-lg">
+            JT
+          </div>
+          <span className="text-white font-bold text-base tracking-tight">
+            JTool <span className="text-esmeralda">Enterprise</span>
+          </span>
+        </div>
+
         <h1 className="text-2xl font-bold text-white mb-1">Iniciar sesión</h1>
+        <p className="text-white/50 text-sm mb-6">Ingresa a tu cuenta de JTool Enterprise</p>
 
         {error && (
           <div className="mb-4 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3">
@@ -69,6 +79,12 @@ function Login() {
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
+            </div>
+            <div className="mt-2 text-right">
+              {/* TODO: conectar flujo real de recuperación de contraseña */}
+              <a href="#" className="text-xs text-white/40 hover:text-esmeralda transition-colors">
+                ¿Olvidaste tu contraseña?
+              </a>
             </div>
           </div>
 

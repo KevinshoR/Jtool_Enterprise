@@ -39,30 +39,20 @@ function Productos() {
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {productos.map((p) => (
-              <article
+              <Link
                 key={p.id}
+                to={`/productos/${p.code}`}
                 className="flex flex-col rounded-2xl border border-grafito/10 bg-white p-8 transition-shadow hover:shadow-lg"
               >
                 <div className="h-11 w-11 rounded-xl bg-esmeralda/10 flex items-center justify-center font-black text-esmeralda mb-4">
                   {p.name.charAt(0)}
                 </div>
                 <h2 className="text-xl font-bold text-noche">{p.name}</h2>
-                <p className="mt-2 text-grafito/70 flex-1">{p.description}</p>
-                <Link
-  key={p.id}
-  to={`/productos/${p.code}`}
-  className="flex flex-col rounded-2xl border border-grafito/10 bg-white p-8 transition-shadow hover:shadow-lg"
->
-  <div className="h-11 w-11 rounded-xl bg-esmeralda/10 flex items-center justify-center font-black text-esmeralda mb-4">
-    {p.name.charAt(0)}
-  </div>
-  <h2 className="text-xl font-bold text-noche">{p.name}</h2>
-  <p className="mt-2 text-grafito/70 flex-1">{p.tagline || p.description}</p>
-  <span className="mt-6 text-sm font-semibold text-esmeralda w-fit">
-    Ver detalles →
-  </span>
-</Link>
-              </article>
+                <p className="mt-2 text-grafito/70 flex-1">{p.tagline || p.description}</p>
+                <span className="mt-6 text-sm font-semibold text-esmeralda w-fit">
+                  Ver detalles →
+                </span>
+              </Link>
             ))}
           </div>
         )}
