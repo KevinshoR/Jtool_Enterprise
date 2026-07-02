@@ -17,6 +17,7 @@ import ClientDashboard from './pages/Dashboard/Dashboard'
 import AdminRoute from './components/AdminRoute'
 import AdminLayout from './components/Admin/AdminLayout'
 import Dashboard from './pages/Admin/Dashboard/Dashboard'
+import RecuperarPassword from './pages/Recuperar/RecuperarPassword'
 import Usuarios from './pages/Admin/Usuarios/Usuarios'
 import Clientes from './pages/Admin/Clientes/Clientes'
 
@@ -48,6 +49,7 @@ function App() {
             <Route path="/contacto" element={<Contacto />} />
             <Route path="/login" element={<Login />} />
             <Route path="/registro" element={<Registro />} />
+            <Route path="/recuperar" element={<RecuperarPassword />} />
             <Route
               path="/dashboard"
               element={
