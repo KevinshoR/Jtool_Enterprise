@@ -6,7 +6,7 @@ async function getPublicPlans(req, res) {
     const result = await pool.query(`
       SELECT
         p.id, p.code, p.name, p.description, p.price_monthly, p.price_annual,
-        p.is_featured, p.sort_order,
+        p.is_featured, p.sort_order, p.max_products, p.features,
         COALESCE(
           json_agg(
             json_build_object('id', pr.id, 'code', pr.code, 'name', pr.name, 'description', pr.description)

@@ -6,6 +6,12 @@ function formatCOP(value) {
   return `$${Number(value).toLocaleString('es-CO')}`
 }
 
+function ahorroAnual(plan) {
+  if (!plan.price_monthly || !plan.price_annual) return null
+  const meses = Math.round(plan.price_monthly ? (plan.price_monthly * 12 - plan.price_annual) / plan.price_monthly : 0)
+  return meses > 0 ? meses : null
+}
+
 function Precios() {
   const [planes, setPlanes] = useState([])
   const [loading, setLoading] = useState(true)
@@ -87,17 +93,22 @@ function Precios() {
                       {' '}{periodLabel}
                     </span>
                   </p>
+                  {annual && ahorroAnual(plan) > 0 && (
+                    <p className={`mt-1 text-xs font-semibold ${plan.is_featured ? 'text-esmeralda' : 'text-esmeralda'}`}>
+                      Ahorra {ahorroAnual(plan)} {ahorroAnual(plan) === 1 ? 'mes' : 'meses'} pagando anual
+                    </p>
+                  )}
 
                   <ul className="mt-6 flex-1 space-y-3 text-sm">
-                    {plan.products.length === 0 ? (
+                    {!Array.isArray(plan.features) || plan.features.length === 0 ? (
                       <li className={plan.is_featured ? 'text-white/50' : 'text-grafito/40'}>
-                        Programas por definir
+                        Beneficios por definir
                       </li>
                     ) : (
-                      plan.products.map((p) => (
-                        <li key={p.id} className="flex items-center gap-2">
+                      plan.features.map((f, i) => (
+                        <li key={i} className="flex items-start gap-2">
                           <span className="text-esmeralda">✓</span>
-                          {p.name}
+                          <span>{f}</span>
                         </li>
                       ))
                     )}

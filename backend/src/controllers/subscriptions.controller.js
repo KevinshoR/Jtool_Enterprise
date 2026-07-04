@@ -45,7 +45,7 @@ async function syncPlanProducts(client, companyId, planId) {
  * Todo en una transacción: si algo falla, no queda nada a medias.
  */
 async function onboarding(req, res) {
-  const { companyName, nit, phone, planId } = req.body
+  const { companyName, nit, phone, planId, productIds } = req.body
   const userId = req.user.id
 
   if (!companyName || companyName.trim().length < 2) {
@@ -65,9 +65,33 @@ async function onboarding(req, res) {
     }
 
     // ¿El plan existe?
-    const planRow = await client.query('SELECT id FROM plans WHERE id = $1', [planId])
+    const planRow = await client.query('SELECT id, max_products FROM plans WHERE id = $1', [planId])
     if (planRow.rows.length === 0) {
       return res.status(400).json({ message: 'El plan seleccionado no existe' })
+    }
+    const plan = planRow.rows[0]
+
+    // ¿El plan trae productos fijos (empresarial) o el usuario debe elegir?
+    const planProductsRow = await client.query('SELECT product_id FROM plan_products WHERE plan_id = $1', [planId])
+    const hasFixedProducts = planProductsRow.rows.length > 0
+
+    let chosenProductIds = []
+    if (!hasFixedProducts) {
+      if (!Array.isArray(productIds) || productIds.length === 0) {
+        return res.status(400).json({ message: 'Debes elegir al menos un programa para este plan' })
+      }
+      if (productIds.length > plan.max_products) {
+        return res.status(400).json({ message: `Este plan permite elegir hasta ${plan.max_products} programa(s)` })
+      }
+      const uniqueIds = [...new Set(productIds)]
+      if (uniqueIds.length !== productIds.length) {
+        return res.status(400).json({ message: 'No repitas el mismo programa' })
+      }
+      const validProducts = await client.query('SELECT id FROM products WHERE id = ANY($1::int[])', [uniqueIds])
+      if (validProducts.rows.length !== uniqueIds.length) {
+        return res.status(400).json({ message: 'Uno o más programas elegidos no son válidos' })
+      }
+      chosenProductIds = uniqueIds
     }
 
     await client.query('BEGIN')
@@ -90,7 +114,19 @@ async function onboarding(req, res) {
       )
     ).rows[0]
 
-    await syncPlanProducts(client, company.id, planId)
+    if (hasFixedProducts) {
+      await syncPlanProducts(client, company.id, planId)
+    } else {
+      for (const productId of chosenProductIds) {
+        await client.query(
+          `INSERT INTO company_products (company_id, product_id, status, source)
+           VALUES ($1, $2, 'active', 'plan')
+           ON CONFLICT (company_id, product_id)
+           DO UPDATE SET status = 'active', source = 'plan'`,
+          [company.id, productId]
+        )
+      }
+    }
 
     await client.query('COMMIT')
 

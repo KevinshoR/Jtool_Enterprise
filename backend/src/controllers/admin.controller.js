@@ -1,4 +1,5 @@
 const pool = require('../db/db')
+const { syncBarbersoft } = require('../utils/productSync')
 
 async function getStats(req, res) {
   try {
@@ -168,6 +169,7 @@ async function manageSubscription(req, res) {
     await client.query('BEGIN')
 
     let result
+    let activatedPlanCode = null
 
     if (action === 'cancel') {
       if (!sub) {
@@ -189,11 +191,12 @@ async function manageSubscription(req, res) {
         await client.query('ROLLBACK')
         return res.status(400).json({ message: 'La empresa no tiene plan: envía plan_id para crear la suscripción' })
       }
-      const planQ = await client.query('SELECT id FROM plans WHERE id = $1', [targetPlan])
+      const planQ = await client.query('SELECT id, code FROM plans WHERE id = $1', [targetPlan])
       if (planQ.rows.length === 0) {
         await client.query('ROLLBACK')
         return res.status(400).json({ message: 'El plan no existe' })
       }
+      const targetPlanCode = planQ.rows[0].code
 
       if (!sub) {
         result = (
@@ -218,10 +221,34 @@ async function manageSubscription(req, res) {
       }
 
       await client.query(`UPDATE companies SET status = 'active', plan_id = $2 WHERE id = $1`, [id, targetPlan])
-      await syncPlanProducts(client, id, targetPlan)
+
+      // Solo re-sincronizar productos si el plan tiene productos fijos (empresarial).
+      // Si no (básica/pro), el cliente ya eligió sus productos en el onboarding: se conservan.
+      const planProductsQ = await client.query('SELECT 1 FROM plan_products WHERE plan_id = $1 LIMIT 1', [targetPlan])
+      if (planProductsQ.rows.length > 0) {
+        await syncPlanProducts(client, id, targetPlan)
+      }
+
+      activatedPlanCode = targetPlanCode
     }
 
     await client.query('COMMIT')
+
+    if (action === 'activate_month') {
+      const barberproQ = await client.query(
+        `SELECT 1 FROM company_products cp
+         JOIN products p ON p.id = cp.product_id
+         WHERE cp.company_id = $1 AND p.code = 'barberpro' AND cp.status = 'active'
+         LIMIT 1`,
+        [id]
+      )
+      if (barberproQ.rows.length > 0) {
+        syncBarbersoft({ companyId: Number(id), active: true, planCode: activatedPlanCode }).catch((err) =>
+          console.error('syncBarbersoft error:', err)
+        )
+      }
+    }
+
     res.json({ message: action === 'cancel' ? 'Suscripción cancelada' : 'Mes activado', subscription: result })
   } catch (error) {
     await client.query('ROLLBACK').catch(() => {})
